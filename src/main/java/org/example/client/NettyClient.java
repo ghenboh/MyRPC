@@ -10,13 +10,15 @@ import io.netty.util.AttributeKey;
 import lombok.AllArgsConstructor;
 import org.example.common.RPCRequest;
 import org.example.common.RPCResponse;
+import org.example.registration.RegisterService;
+
+import java.net.InetSocketAddress;
 
 @AllArgsConstructor
-public class NettyClient implements RPCClient{
-    private final String host;
-    private final int port;
+public class NettyClient implements RPCClient {
     private static final Bootstrap bootstrap = new Bootstrap();
     private static final EventLoopGroup group = new NioEventLoopGroup();
+    private static RegisterService registerService = new RegisterService();
 
     static {
         bootstrap.group(group).channel(NioSocketChannel.class).handler(new NettyClientInitializer());
@@ -25,7 +27,8 @@ public class NettyClient implements RPCClient{
     @Override
     public RPCResponse sendRequest(RPCRequest request) {
         try {
-            ChannelFuture future = bootstrap.connect(host, port).sync();
+            InetSocketAddress inetSocketAddress = registerService.serviceDiscover(request.getInterfaceName());
+            ChannelFuture future = bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).sync();
             Channel channel = future.channel();
             channel.writeAndFlush(request);
             channel.closeFuture().sync();

@@ -7,7 +7,7 @@ import org.example.transfer.RPCProxy;
 
 public class Client {
     public static void main(String[] args) {
-        RPCClient rpcClient = new NettyClient("127.0.0.1", 7788);
+        RPCClient rpcClient = new NettyClient();
         RPCProxy rpcProxy = new RPCProxy(rpcClient);
         TestService testService = rpcProxy.getProxy(TestService.class);
         System.out.println(testService.hello());
