@@ -1,6 +1,4 @@
-package org.example.Serialize;
-
-import lombok.Data;
+package org.example.serialize;
 
 public interface Serializer {
     public int getCode();

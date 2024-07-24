@@ -49,4 +49,7 @@ public class RedisService {
         return executeSync(command -> command.del(k));
     }
 
+    public boolean expire(String k, long timeout) {
+        return executeSync(commands -> commands.expire(k, timeout));
+    }
 }

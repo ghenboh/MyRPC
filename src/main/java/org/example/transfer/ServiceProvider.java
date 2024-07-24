@@ -1,6 +1,8 @@
 package org.example.transfer;
 
 import lombok.Builder;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.example.registration.RegisterService;
 
 import java.net.InetSocketAddress;

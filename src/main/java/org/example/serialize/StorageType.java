@@ -1,4 +1,4 @@
-package org.example.Serialize;
+package org.example.serialize;
 
 import org.example.common.RPCRequest;
 import org.example.common.RPCResponse;

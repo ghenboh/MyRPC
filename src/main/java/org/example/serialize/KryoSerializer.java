@@ -1,14 +1,11 @@
-package org.example.Serialize;
+package org.example.serialize;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 import com.esotericsoftware.kryo.io.Output;
-import org.example.common.RPCRequest;
-import org.example.common.RPCResponse;
 
 import java.io.ByteArrayOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 
 public class KryoSerializer implements Serializer {
 

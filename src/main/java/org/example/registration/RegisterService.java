@@ -35,10 +35,14 @@ public class RegisterService {
             redisService.set(serviceName, address.getHostName() + ":" + address.getPort());
             client.getData().usingWatcher(new Watcher() {
                 public void process(WatchedEvent event) {
-                    if(event.getType() == Event.EventType.NodeDataChanged) {
-                        String[] transfer = event.getPath().split("/");
-                        String serviceName = transfer[transfer.length - 1];
-                        redisService.delete(serviceName);
+                    String[] transfer = event.getPath().split("/");
+                    String serviceName = transfer[transfer.length - 2];
+                    redisService.expire(serviceName, 1);
+                    redisService.delete(serviceName);
+                    try {
+                        client.getData().usingWatcher(this).forPath(event.getPath());
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
             }).forPath(newPath);
