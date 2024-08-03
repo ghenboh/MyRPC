@@ -1,6 +1,6 @@
 package org.example.communication;
 
-import org.example.Service.TestService;
+import org.example.service.TestService;
 import org.example.client.NettyClient;
 import org.example.client.RPCClient;
 import org.example.transfer.RPCProxy;

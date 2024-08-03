@@ -1,6 +1,6 @@
 package org.example.communication;
 
-import org.example.Service.TestServiceImpl;
+import org.example.service.TestServiceImpl;
 import org.example.server.NettyServer;
 import org.example.server.RPCServer;
 import org.example.transfer.ServiceProvider;

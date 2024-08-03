@@ -1,4 +1,4 @@
-package org.example.Service;
+package org.example.service;
 
 public class TestServiceImpl implements TestService {
     @Override
