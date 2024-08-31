@@ -32,12 +32,12 @@ public class RegisterService {
             }
             String newPath = "/" + serviceName + "/" + address.getHostName() + ":" + address.getPort();
             client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL).forPath(newPath);
-            redisService.set(serviceName, address.getHostName() + ":" + address.getPort());
+            redisService.sadd(serviceName, address.getHostName() + ":" + address.getPort());
             client.getData().usingWatcher(new Watcher() {
                 public void process(WatchedEvent event) {
                     String[] transfer = event.getPath().split("/");
                     String serviceName = transfer[transfer.length - 2];
-                    redisService.expire(serviceName, 1);
+                    redisService.expire(serviceName, 0);
                     redisService.delete(serviceName);
                     try {
                         client.getData().usingWatcher(this).forPath(event.getPath());
@@ -53,12 +53,14 @@ public class RegisterService {
 
     public InetSocketAddress serviceDiscover(String serviceName) {
         try {
-            if(redisService.get(serviceName) != null) {
-                return makeAddress(redisService.get(serviceName));
+            if(redisService.exists(serviceName) != 1L) {
+                return makeAddress(redisService.spop(serviceName));
             }
             List<String> addresses = client.getChildren().forPath("/" + serviceName);
             String address = addresses.get(random.nextInt(addresses.size()));
-            redisService.set(serviceName, address);
+            for(String addr : addresses) {
+                redisService.sadd(serviceName, addr);
+            }
             return makeAddress(address);
         } catch (Exception e) {
             e.printStackTrace();

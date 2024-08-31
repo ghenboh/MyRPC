@@ -19,6 +19,7 @@ public class NettyClient implements RPCClient {
     private static final Bootstrap bootstrap = new Bootstrap();
     private static final EventLoopGroup group = new NioEventLoopGroup();
     private static RegisterService registerService = new RegisterService();
+    private String serverName;
 
     static {
         bootstrap.group(group).channel(NioSocketChannel.class).handler(new NettyClientInitializer());
@@ -27,7 +28,7 @@ public class NettyClient implements RPCClient {
     @Override
     public RPCResponse sendRequest(RPCRequest request) {
         try {
-            InetSocketAddress inetSocketAddress = registerService.serviceDiscover(request.getInterfaceName());
+            InetSocketAddress inetSocketAddress = registerService.serviceDiscover(serverName + request.getInterfaceName());
             ChannelFuture future = bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).sync();
             Channel channel = future.channel();
             channel.writeAndFlush(request);

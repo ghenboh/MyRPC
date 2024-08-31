@@ -37,6 +37,18 @@ public class RedisService {
         }
     }
 
+    public Long sadd(String k, String v) {
+        return executeSync(commands -> commands.sadd(k, v));
+    }
+
+    public String spop(String k) {
+        return executeSync(commands -> commands.spop(k));
+    }
+
+    public Long exists(String k) {
+        return executeSync(commands -> commands.exists(k));
+    }
+
     public String set(String k, String v) {
         return executeSync(command -> command.set(k, v));
     }
