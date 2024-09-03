@@ -54,7 +54,7 @@ public class RegisterService {
     public InetSocketAddress serviceDiscover(String serviceName) {
         try {
             if(redisService.exists(serviceName) != 1L) {
-                return makeAddress(redisService.spop(serviceName));
+                return makeAddress(redisService.srandmember(serviceName));
             }
             List<String> addresses = client.getChildren().forPath("/" + serviceName);
             String address = addresses.get(random.nextInt(addresses.size()));

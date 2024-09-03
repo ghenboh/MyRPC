@@ -41,21 +41,11 @@ public class RedisService {
         return executeSync(commands -> commands.sadd(k, v));
     }
 
-    public String spop(String k) {
-        return executeSync(commands -> commands.spop(k));
-    }
-
     public Long exists(String k) {
         return executeSync(commands -> commands.exists(k));
     }
 
-    public String set(String k, String v) {
-        return executeSync(command -> command.set(k, v));
-    }
-
-    public String get(String k) {
-        return executeSync(command -> command.get(k));
-    }
+    public String srandmember(String k) {return executeSync(command -> command.srandmember(k));}
 
     public Long delete(String k) {
         return executeSync(command -> command.del(k));
