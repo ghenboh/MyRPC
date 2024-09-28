@@ -37,6 +37,6 @@ public class ServiceProvider {
     }
 
     public static String makeServerName() {
-        return "server-" + counter.getAndIncrement();
+        return "server-" + counter.getAndIncrement() + "-";
     }
 }

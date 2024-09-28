@@ -8,17 +8,22 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.util.AttributeKey;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.example.common.RPCRequest;
 import org.example.common.RPCResponse;
 import org.example.registration.RegisterService;
 
 import java.net.InetSocketAddress;
+import java.util.function.Consumer;
 
+@Getter
 @AllArgsConstructor
 public class NettyClient implements RPCClient {
     private static final Bootstrap bootstrap = new Bootstrap();
     private static final EventLoopGroup group = new NioEventLoopGroup();
-    private static RegisterService registerService = new RegisterService();
+    private static final RegisterService registerService = new RegisterService();
+    static int timeout = 0;
+
     private String serverName;
 
     static {
@@ -39,6 +44,23 @@ public class NettyClient implements RPCClient {
             e.printStackTrace();
             return null;
         }
+    }
 
+    @Override
+    public void sendRequestAsync(RPCRequest request, Consumer<RPCResponse> callback) {
+        InetSocketAddress inetSocketAddress = registerService.serviceDiscover(serverName + request.getInterfaceName());
+        bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).addListener((ChannelFuture future) -> {
+            if (future.isSuccess()) {
+                Channel channel = future.channel();
+                channel.writeAndFlush(request);
+                channel.closeFuture().addListener((ChannelFuture closeFuture) -> {
+                    AttributeKey<RPCResponse> key = AttributeKey.valueOf("GetRPCResponse");
+                    RPCResponse response = channel.attr(key).get();
+                    callback.accept(response);
+                });
+            } else {
+                callback.accept(RPCResponse.getFailureResponse());
+            }
+        });
     }
 }
