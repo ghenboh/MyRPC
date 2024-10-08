@@ -11,8 +11,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.example.common.RPCRequest;
 import org.example.common.RPCResponse;
+import org.example.communication.Client;
 import org.example.registration.RegisterService;
 
+import javax.security.auth.callback.Callback;
 import java.net.InetSocketAddress;
 import java.util.function.Consumer;
 
@@ -47,15 +49,17 @@ public class NettyClient implements RPCClient {
     }
 
     @Override
-    public void sendRequestAsync(RPCRequest request, Consumer<RPCResponse> callback) {
+    public void sendRequestAsync(RPCRequest request, Client client, String serviceName) {
         InetSocketAddress inetSocketAddress = registerService.serviceDiscover(serverName + request.getInterfaceName());
         bootstrap.connect(inetSocketAddress.getHostName(), inetSocketAddress.getPort()).addListener((ChannelFuture future) -> {
+            Consumer<RPCResponse> callback = client.getConsumer(serviceName);
             if (future.isSuccess()) {
                 Channel channel = future.channel();
                 channel.writeAndFlush(request);
                 channel.closeFuture().addListener((ChannelFuture closeFuture) -> {
                     AttributeKey<RPCResponse> key = AttributeKey.valueOf("GetRPCResponse");
                     RPCResponse response = channel.attr(key).get();
+                    client.tryAcquire();
                     callback.accept(response);
                 });
             } else {

@@ -1,11 +1,9 @@
 package org.example.transfer;
 
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.example.client.RPCClient;
 import org.example.common.RPCRequest;
-import org.example.common.RPCResponse;
 import org.example.communication.Client;
 
 import javax.annotation.Nonnull;
@@ -31,8 +29,8 @@ public class RPCAsyncProxy implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) {
         try {
             rpcClient.sendRequestAsync(RPCRequest.builder().interfaceName(method.getDeclaringClass().getName())
-                    .methodName(method.getName()).parameters(args).build(), client.getConsumer(serviceName + method.getDeclaringClass().getName() + "-" + method.getName()));
-            semaphore.release();
+                    .methodName(method.getName()).parameters(args).build(), client, serviceName + method.getDeclaringClass().getName() + "-" + method.getName());
+            makeRelease();
             return null;
         } catch (Exception e) {
             e.printStackTrace();
@@ -49,7 +47,11 @@ public class RPCAsyncProxy implements InvocationHandler {
         }
     }
 
-    public void makeAcquire() throws InterruptedException {
+    public void tryAcquire() throws InterruptedException {
         semaphore.acquire();
+    }
+
+    public void makeRelease() throws InterruptedException {
+        semaphore.release();
     }
 }

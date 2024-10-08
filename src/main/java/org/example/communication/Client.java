@@ -26,8 +26,9 @@ public class Client {
         for (int helper = 0; helper < 10000; helper++) {
             System.out.println(helper); //do some other work
         }
+        Thread.sleep(1000);
         client.makeRelease();
-        rpcAsyncProxy.makeAcquire();
+        rpcAsyncProxy.tryAcquire();
     }
 
     public void setConsumer(String service, Consumer<RPCResponse> consumer) {
